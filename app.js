@@ -356,8 +356,13 @@ class IPTVPlayer {
             
             this.hls.on(Hls.Events.ERROR, (event, data) => {
                 console.error('HLS error:', data);
-                // Solo mostrar error si es fatal y no se puede recuperar
-                if (data.fatal && data.type !== 'networkError') {
+                // Solo mostrar error si es fatal y no es un error de red que se puede recuperar
+                if (data.fatal) {
+                    if (data.type === 'networkError' && data.details === 'manifestLoadError') {
+                        // No mostrar error al usuario si es un error temporal de carga del manifest
+                        console.log('Error temporal de red, el stream puede cargarse correctamente');
+                        return;
+                    }
                     this.showLoading(false);
                     alert('Error al cargar el stream');
                 }
