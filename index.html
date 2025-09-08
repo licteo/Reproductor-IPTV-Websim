@@ -2,15 +2,24 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reproductor IPTV</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#00d4ff">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="IPTV Player">
     <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Precargar recursos críticos -->
+    <link rel="preload" href="https://esm.sh/hls.js@1.4.12" as="script">
+    <link rel="preload" href="styles.css" as="style">
+    
+    <!-- Tema para navegadores -->
+    <meta name="theme-color" content="#00d4ff">
+    <meta name="msapplication-navbutton-color" content="#00d4ff">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Reproductor IPTV</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
@@ -49,6 +58,11 @@
         <div class="video-container">
             <video id="videoPlayer" controls></video>
             <div id="loading" class="loading">Cargando...</div>
+        </div>
+        
+        <!-- Botón de play manual para móvil (oculto por defecto) -->
+        <div id="playButton" class="play-button" style="display: none;">
+            <button class="btn-primary">▶ Reproducir</button>
         </div>
     </div>
     

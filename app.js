@@ -311,28 +311,56 @@ class IPTVPlayer {
         // Detener cualquier reproducción actual
         this.video.pause();
         this.video.removeAttribute('src');
+        if (this.hls) {
+            this.hls.destroy();
+            this.hls = null;
+        }
         this.video.load();
         
         if (Hls.isSupported()) {
-            if (this.hls) {
-                this.hls.destroy();
-            }
+            this.hls = new Hls({
+                // Configuración optimizada para móvil
+                maxBufferLength: 30,
+                maxBufferSize: 60 * 1000 * 1000,
+                maxBufferHole: 0.5,
+                maxSeekHole: 2,
+                liveSyncDurationCount: 3,
+                liveMaxLatencyDurationCount: 7,
+                maxLiveSyncPlaybackRate: 1.5,
+                // Mejorar estabilidad en móvil
+                fragLoadingTimeOut: 20000,
+                fragLoadingMaxRetry: 6,
+                fragLoadingRetryDelay: 1000,
+                fragLoadingMaxRetryTimeout: 64000,
+                levelLoadingTimeOut: 10000,
+                levelLoadingMaxRetry: 4,
+                levelLoadingRetryDelay: 1000,
+                levelLoadingMaxRetryTimeout: 32000
+            });
             
-            this.hls = new Hls();
             this.hls.loadSource(url);
             this.hls.attachMedia(this.video);
             
             this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                this.video.play().catch(e => {
-                    console.warn('Error al reproducir:', e);
-                });
+                // Reproducir con interacción de usuario para evitar políticas de navegador
+                const playPromise = this.video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.warn('Reproducción bloqueada por políticas del navegador:', error);
+                        // Mostrar botón de play manual si es necesario
+                        this.showPlayButton();
+                    });
+                }
                 this.showLoading(false);
             });
             
             this.hls.on(Hls.Events.ERROR, (event, data) => {
                 console.error('HLS error:', data);
-                this.showLoading(false);
-                alert('Error al cargar el stream');
+                // Solo mostrar error si es fatal y no se puede recuperar
+                if (data.fatal && data.type !== 'networkError') {
+                    this.showLoading(false);
+                    alert('Error al cargar el stream');
+                }
             });
         } else if (this.video.canPlayType('application/vnd.apple.mpegurl')) {
             this.video.src = url;
@@ -340,6 +368,12 @@ class IPTVPlayer {
                 this.video.play().catch(e => {
                     console.warn('Error al reproducir:', e);
                 });
+                this.showLoading(false);
+            });
+            
+            // Manejar errores de video nativo
+            this.video.addEventListener('error', () => {
+                console.error('Video error:', this.video.error);
                 this.showLoading(false);
             });
         } else {
@@ -354,6 +388,10 @@ class IPTVPlayer {
         } else {
             this.loading.classList.remove('show');
         }
+    }
+    
+    showPlayButton() {
+        // Implementar lógica para mostrar botón de play manual si es necesario
     }
 }
 
