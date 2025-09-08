@@ -2,7 +2,7 @@ import Hls from 'hls.js';
 
 class IPTVPlayer {
     constructor() {
-        this.channels = [];
+        this.channels = JSON.parse(localStorage.getItem('iptvChannels') || '[]');
         this.currentChannel = null;
         this.hls = null;
         this.favorites = JSON.parse(localStorage.getItem('iptvFavorites') || '[]');
@@ -10,6 +10,12 @@ class IPTVPlayer {
         this.initializeElements();
         this.setupEventListeners();
         this.registerServiceWorker();
+        
+        // Si hay canales guardados, renderizarlos inmediatamente
+        if (this.channels.length > 0) {
+            this.renderChannelList();
+            this.detectLanguagesAndCategories();
+        }
     }
     
     registerServiceWorker() {
@@ -40,6 +46,9 @@ class IPTVPlayer {
         this.loadListBtn.addEventListener('click', () => this.m3uFile.click());
         this.m3uFile.addEventListener('change', (e) => this.loadM3UFile(e.target.files[0]));
         this.searchInput.addEventListener('input', () => this.filterChannels());
+        
+        // Agregar botón para limpiar lista
+        document.getElementById('clearList')?.addEventListener('click', () => this.clearChannelList());
     }
     
     filterChannels() {
@@ -124,6 +133,8 @@ class IPTVPlayer {
         });
         
         this.channels = channels;
+        // Guardar canales en localStorage
+        localStorage.setItem('iptvChannels', JSON.stringify(channels));
         this.renderChannelList();
         this.detectLanguagesAndCategories();
     }
@@ -245,6 +256,18 @@ class IPTVPlayer {
         this.searchInput.value = '';
         document.getElementById('favoritesToggle') && (document.getElementById('favoritesToggle').checked = false);
         this.applyFilters();
+    }
+    
+    clearChannelList() {
+        if (confirm('¿Estás seguro de que quieres limpiar la lista de canales?')) {
+            this.channels = [];
+            localStorage.removeItem('iptvChannels');
+            this.renderChannelList();
+            
+            // Limpiar filtros
+            const existingFilters = document.querySelector('.filters-container');
+            if (existingFilters) existingFilters.remove();
+        }
     }
     
     renderChannelList() {
