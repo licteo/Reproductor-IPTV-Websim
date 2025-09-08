@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor IPTV</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00d4ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="IPTV Player">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+</head>
+<body>
+    <div class="container">
+        <h1>Reproductor IPTV</h1>
+        
+        <!-- Sección para cargar canales individuales -->
+        <div class="input-section">
+            <input type="text" id="channelUrl" placeholder="Pega la URL del canal (.m3u8)">
+            <button id="loadChannel" class="btn-primary">Cargar Canal</button>
+        </div>
+        
+        <!-- Sección para cargar lista M3U -->
+        <div class="input-section">
+            <input type="file" id="m3uFile" accept=".m3u,.m3u8" class="file-input">
+            <button id="loadList" class="btn-secondary">Cargar Lista M3U</button>
+        </div>
+        
+        <!-- Sección para buscar canales -->
+        <div class="input-section">
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Buscar canal...">
+                <span class="search-icon">🔍</span>
+            </div>
+            <label class="favorites-toggle">
+                <input type="checkbox" id="favoritesToggle">
+                <span class="toggle-label">★ Solo Favoritos</span>
+            </label>
+        </div>
+        
+        <!-- Lista de canales -->
+        <div id="channelList" class="channel-list">
+            <p class="empty-message">No hay canales cargados</p>
+        </div>
+        
+        <!-- Reproductor de video -->
+        <div class="video-container">
+            <video id="videoPlayer" controls></video>
+            <div id="loading" class="loading">Cargando...</div>
+        </div>
+    </div>
+    
+    <script type="importmap">
+    {
+        "imports": {
+            "hls.js": "https://esm.sh/hls.js@1.4.12"
+        }
+    }
+    </script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
