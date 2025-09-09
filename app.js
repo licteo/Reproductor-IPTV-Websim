@@ -16,6 +16,9 @@ class IPTVPlayer {
             this.renderChannelList();
             this.detectLanguagesAndCategories();
         }
+        
+        // Establecer volumen máximo
+        this.video.volume = 1;
     }
     
     registerServiceWorker() {
@@ -57,6 +60,7 @@ class IPTVPlayer {
         // Controles de canal en el reproductor
         document.getElementById('prevChannel')?.addEventListener('click', () => this.changeChannel(-1));
         document.getElementById('nextChannel')?.addEventListener('click', () => this.changeChannel(1));
+        document.getElementById('favoriteCurrent')?.addEventListener('click', () => this.toggleCurrentFavorite());
     }
     
     changeChannel(direction) {
@@ -347,6 +351,17 @@ class IPTVPlayer {
         if (this.currentChannel !== null && this.channels[this.currentChannel]) {
             const channel = this.channels[this.currentChannel];
             this.currentChannelInfo.textContent = `${this.currentChannel + 1} - ${channel.name}`;
+            this.updateFavoriteButton();
+        }
+    }
+
+    updateFavoriteButton() {
+        const favoriteBtn = document.getElementById('favoriteCurrent');
+        if (favoriteBtn && this.currentChannel !== null) {
+            const isFav = this.isFavorite(this.currentChannel);
+            favoriteBtn.textContent = isFav ? '★' : '☆';
+            favoriteBtn.style.color = isFav ? '#00d4ff' : '#fff';
+            favoriteBtn.style.textShadow = isFav ? '0 0 10px rgba(0, 212, 255, 0.5)' : 'none';
         }
     }
     
@@ -449,6 +464,12 @@ class IPTVPlayer {
     
     showPlayButton() {
         // Implementar lógica para mostrar botón de play manual si es necesario
+    }
+    
+    toggleCurrentFavorite() {
+        if (this.currentChannel !== null) {
+            this.toggleFavorite(this.currentChannel);
+        }
     }
 }
 

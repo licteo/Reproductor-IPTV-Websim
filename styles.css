@@ -319,6 +319,26 @@ video {
     font-size: 14px;
 }
 
+.channel-btn.favorite-current {
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    pointer-events: all;
+    backdrop-filter: blur(10px);
+    min-width: 40px;
+}
+
+.channel-btn.favorite-current:hover {
+    background: rgba(0, 212, 255, 0.8);
+    transform: scale(1.1);
+}
+
 .channel-controls {
     position: absolute;
     bottom: 60px;
@@ -332,6 +352,7 @@ video {
     z-index: 10;
     opacity: 0;
     transition: opacity 0.3s ease;
+    gap: 10px;
 }
 
 .channel-btn {
