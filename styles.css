@@ -319,6 +319,55 @@ video {
     font-size: 14px;
 }
 
+.channel-controls {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.channel-btn {
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    pointer-events: all;
+    backdrop-filter: blur(10px);
+}
+
+.channel-btn:hover {
+    background: rgba(0, 212, 255, 0.8);
+    transform: scale(1.05);
+}
+
+.current-channel-info {
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+}
+
+/* Mostrar controles al hacer hover en el video */
+.video-container:hover .channel-controls {
+    opacity: 1;
+}
+
 /* Mejoras para móvil */
 @media (max-width: 768px) {
     body {
@@ -372,6 +421,21 @@ video {
     
     .filters-container select {
         width: 100%;
+    }
+
+    .channel-controls {
+        bottom: 70px;
+        padding: 0 15px;
+    }
+    
+    .channel-btn {
+        padding: 12px 18px;
+        font-size: 16px;
+    }
+    
+    .current-channel-info {
+        font-size: 16px;
+        padding: 10px 18px;
     }
 
     /* Hacer el video responsive */

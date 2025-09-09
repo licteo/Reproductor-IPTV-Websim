@@ -39,6 +39,7 @@ class IPTVPlayer {
         this.channelList = document.getElementById('channelList');
         this.loading = document.getElementById('loading');
         this.searchInput = document.getElementById('searchInput');
+        this.currentChannelInfo = document.getElementById('currentChannelInfo');
     }
     
     setupEventListeners() {
@@ -49,6 +50,21 @@ class IPTVPlayer {
         
         // Agregar botón para limpiar lista
         document.getElementById('clearList')?.addEventListener('click', () => this.clearChannelList());
+        
+        // Controles de cambio de canal
+        document.addEventListener('keydown', (e) => this.handleKeyboardControls(e));
+        
+        // Controles de canal en el reproductor
+        document.getElementById('prevChannel')?.addEventListener('click', () => this.changeChannel(-1));
+        document.getElementById('nextChannel')?.addEventListener('click', () => this.changeChannel(1));
+    }
+    
+    changeChannel(direction) {
+        if (this.channels.length === 0) return;
+        
+        const currentIndex = this.currentChannel !== null ? this.currentChannel : 0;
+        const newIndex = (currentIndex + direction + this.channels.length) % this.channels.length;
+        this.selectChannel(newIndex);
     }
     
     filterChannels() {
@@ -317,8 +333,21 @@ class IPTVPlayer {
         // Agregar clase active al canal seleccionado
         this.channelList.children[index].classList.add('active');
         
+        // Guardar el índice actual
+        this.currentChannel = index;
+        
+        // Actualizar información del canal actual
+        this.updateCurrentChannelInfo();
+        
         // Reproducir el canal
         this.playChannel(index);
+    }
+    
+    updateCurrentChannelInfo() {
+        if (this.currentChannel !== null && this.channels[this.currentChannel]) {
+            const channel = this.channels[this.currentChannel];
+            this.currentChannelInfo.textContent = `${this.currentChannel + 1} - ${channel.name}`;
+        }
     }
     
     playChannel(index) {
