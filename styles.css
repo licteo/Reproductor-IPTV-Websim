@@ -496,3 +496,85 @@ video::-webkit-media-controls {
     color: #00d4ff;
     margin-left: 8px;
 }
+
+/* Estilos para el botón de instalación */
+.install-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(45deg, #00d4ff, #0099cc);
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+    z-index: 1000;
+    display: none;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    backdrop-filter: blur(10px);
+}
+
+.install-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 212, 255, 0.6);
+}
+
+.install-button:active {
+    transform: translateY(0);
+}
+
+/* Ocultar botón cuando está instalado */
+.pwa-installed .install-button {
+    display: none !important;
+}
+
+/* Mejorar el estilo cuando está en modo standalone */
+.pwa-installed .container {
+    padding: 20px;
+}
+
+.pwa-installed h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* Animación de entrada */
+@keyframes slideUp {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Mejoras para el modo PWA en móvil */
+@media (display-mode: standalone) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        max-width: 100%;
+        padding: 20px;
+        border-radius: 15px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+    
+    .input-section {
+        margin-bottom: 15px;
+    }
+    
+    .channel-list {
+        max-height: 250px;
+    }
+}
