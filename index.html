@@ -60,13 +60,25 @@
             });
         }
         
-        // Manejar la instalación
+        // Manejar la instalación mejorada para Android 11
         let deferredPrompt;
+        let isInstallable = false;
+        
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
+            isInstallable = true;
             
-            // Mostrar botón de instalación personalizado
+            // Crear botón de instalación con mejor UI
+            createInstallButton();
+        });
+        
+        // Función para crear el botón de instalación
+        function createInstallButton() {
+            // Remover botón existente si hay
+            const existingButton = document.querySelector('.install-button');
+            if (existingButton) existingButton.remove();
+            
             const installButton = document.createElement('button');
             installButton.textContent = 'Instalar App';
             installButton.className = 'install-button';
@@ -85,6 +97,9 @@
                 z-index: 1000;
                 display: none;
                 transition: all 0.3s ease;
+                font-size: 14px;
+                backdrop-filter: blur(10px);
+                animation: slideUp 0.3s ease;
             `;
             
             document.body.appendChild(installButton);
@@ -95,24 +110,81 @@
                     const { outcome } = await deferredPrompt.userChoice;
                     if (outcome === 'accepted') {
                         console.log('Usuario aceptó instalar la app');
+                        installButton.style.display = 'none';
                     }
                     deferredPrompt = null;
-                    installButton.style.display = 'none';
+                } else {
+                    // Para Android 11, mostrar instrucciones
+                    showInstallInstructions();
                 }
             });
             
             // Mostrar el botón después de 1 segundo
             setTimeout(() => {
                 installButton.style.display = 'block';
-                installButton.style.animation = 'slideUp 0.3s ease';
             }, 1000);
-        });
+        }
+        
+        // Función para mostrar instrucciones de instalación en Android 11
+        function showInstallInstructions() {
+            const instructions = document.createElement('div');
+            instructions.className = 'install-instructions';
+            instructions.innerHTML = `
+                <div class="install-modal">
+                    <h3>📱 Instalar IPTV Player</h3>
+                    <p>En tu versión de Android, sigue estos pasos:</p>
+                    <ol>
+                        <li>🔧 Toca el menú de Chrome (tres puntos arriba a la derecha)</li>
+                        <li>📲 Selecciona <strong>"Agregar a la pantalla de inicio"</strong></li>
+                        <li>✅ Confirma tocando <strong>"Agregar"</strong></li>
+                    </ol>
+                    <button class="btn-primary" onclick="this.parentElement.parentElement.remove()">Entendido</button>
+                </div>
+            `;
+            instructions.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                padding: 20px;
+            `;
+            
+            document.body.appendChild(instructions);
+        }
         
         // Detectar cuando la app se ejecuta en modo standalone
         if (window.matchMedia('(display-mode: standalone)').matches) {
             console.log('App ejecutándose en modo standalone');
             document.body.classList.add('pwa-installed');
         }
+        
+        // Función para verificar si la app está instalada
+        function checkIfInstalled() {
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                document.body.classList.add('pwa-installed');
+                return true;
+            }
+            
+            // Para Android 11, verificar si hay acceso directo
+            if ('getInstalledRelatedApps' in navigator && window.self === window.top) {
+                navigator.getInstalledRelatedApps().then(apps => {
+                    if (apps.length > 0) {
+                        document.body.classList.add('pwa-installed');
+                    }
+                }).catch(error => {
+                    console.log('No se pudo verificar apps instaladas:', error);
+                });
+            }
+        }
+        
+        // Verificar estado de instalación después de 2 segundos
+        setTimeout(checkIfInstalled, 2000);
         
         // Agregar animación CSS dinámica
         const style = document.createElement('style');
@@ -131,8 +203,52 @@
             .pwa-installed .install-button {
                 display: none !important;
             }
+            
+            .install-modal {
+                background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+                padding: 30px;
+                border-radius: 15px;
+                max-width: 400px;
+                width: 90%;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+                border: 1px solid rgba(0, 212, 255, 0.3);
+            }
+            
+            .install-modal h3 {
+                color: #00d4ff;
+                margin-bottom: 15px;
+                font-size: 1.5rem;
+            }
+            
+            .install-modal p {
+                margin-bottom: 20px;
+                color: #ccc;
+            }
+            
+            .install-modal ol {
+                margin-bottom: 25px;
+                padding-left: 20px;
+            }
+            
+            .install-modal li {
+                margin-bottom: 10px;
+                color: #e0e0e0;
+                line-height: 1.5;
+            }
+            
+            .install-modal button {
+                width: 100%;
+                margin-top: 10px;
+            }
         `;
         document.head.appendChild(style);
+        
+        // Verificar periódicamente si la app se puede instalar
+        setInterval(() => {
+            if (!document.body.classList.contains('pwa-installed') && !document.querySelector('.install-button')) {
+                createInstallButton();
+            }
+        }, 30000);
     </script>
     
     <!-- Tema para navegadores -->
