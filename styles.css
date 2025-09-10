@@ -150,6 +150,44 @@ input[type="text"]:focus {
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.channel-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(to bottom, #00d4ff, #0099cc);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.channel-item.active::before {
+    opacity: 1;
+}
+
+.channel-item[data-category="Deportes"]::before {
+    background: linear-gradient(to bottom, #ff6b35, #ff8c42);
+}
+
+.channel-item[data-category="Noticias"]::before {
+    background: linear-gradient(to bottom, #ff4757, #ff6b7a);
+}
+
+.channel-item[data-category="Cine"]::before {
+    background: linear-gradient(to bottom, #a55eea, #c44569);
+}
+
+.channel-item[data-category="Entretenimiento"]::before {
+    background: linear-gradient(to bottom, #26de81, #20bf6b);
+}
+
+.channel-item[data-category="Infantil"]::before {
+    background: linear-gradient(to bottom, #fd79a8, #e84393);
 }
 
 .channel-info {
@@ -225,6 +263,7 @@ video {
     width: 100%;
     height: auto;
     display: block;
+    playback-rate: 1;
 }
 
 .loading {
@@ -269,6 +308,7 @@ video {
     padding: 15px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
+    backdrop-filter: blur(10px);
 }
 
 .filters-container label {
@@ -280,24 +320,26 @@ video {
 }
 
 .filters-container select {
-    padding: 8px 12px;
+    padding: 10px 15px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
+    border-radius: 8px;
     color: #fff;
     font-size: 14px;
     cursor: pointer;
     transition: all 0.3s ease;
+    min-width: 150px;
 }
 
 .filters-container select:hover {
     border-color: #00d4ff;
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .filters-container select:focus {
     outline: none;
     border-color: #00d4ff;
-    box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.3);
 }
 
 .favorites-toggle {
@@ -355,6 +397,65 @@ video {
     gap: 10px;
 }
 
+.channel-controls.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Mostrar controles al hacer hover en el video (solo desktop) */
+@media (hover: hover) and (pointer: fine) {
+    .video-container:hover .channel-controls {
+        opacity: 1;
+        pointer-events: all;
+    }
+}
+
+/* En pantalla completa, mostrar controles con mayor visibilidad */
+video::-webkit-media-controls {
+    z-index: 1;
+}
+
+.channel-controls {
+    z-index: 100;
+}
+
+/* Asegurar que los controles estén por encima del video en pantalla completa */
+:fullscreen .channel-controls,
+:-webkit-full-screen .channel-controls,
+:-moz-full-screen .channel-controls,
+:-ms-fullscreen .channel-controls {
+    position: fixed !important;
+    bottom: 80px !important;
+    z-index: 2147483647 !important;
+    opacity: 1 !important;
+    pointer-events: all !important;
+}
+
+/* En móvil, mostrar controles con click */
+@media (max-width: 768px) {
+    .channel-controls {
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    .channel-controls.visible {
+        opacity: 1;
+        pointer-events: all;
+    }
+}
+
+/* Asegurar que los botones siempre estén visibles cuando hay controles visibles */
+.channel-controls.visible .channel-btn,
+.channel-controls.visible .current-channel-info {
+    display: block !important;
+}
+
+/* Siempre mostrar controles cuando hay un canal activo */
+.video-container.has-active-channel .channel-controls {
+    opacity: 1;
+    pointer-events: all;
+}
+
 .channel-btn {
     background: rgba(0, 0, 0, 0.7);
     color: #fff;
@@ -384,110 +485,12 @@ video {
     backdrop-filter: blur(10px);
 }
 
-/* Mostrar controles al hacer hover en el video */
-.video-container:hover .channel-controls {
-    opacity: 1;
-}
-
-/* Mejoras para móvil */
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
-    
-    .container {
-        padding: 20px;
-        border-radius: 15px;
-    }
-    
-    h1 {
-        font-size: 2rem;
-        margin-bottom: 20px;
-    }
-    
-    .input-section {
-        flex-direction: column;
-        gap: 12px;
-    }
-    
-    .search-container {
-        min-width: 100%;
-    }
-    
-    input[type="text"] {
-        min-width: 100%;
-        font-size: 16px; /* Prevenir zoom en iOS */
-    }
-    
-    .btn-primary, .btn-secondary {
-        width: 100%;
-        padding: 14px 24px;
-        font-size: 16px;
-    }
-    
-    .channel-list {
-        max-height: 250px;
-        padding: 15px;
-    }
-    
-    .channel-item {
-        padding: 14px 16px;
-    }
-    
-    .filters-container {
-        flex-direction: column;
-        gap: 10px;
-        align-items: stretch;
-    }
-    
-    .filters-container select {
-        width: 100%;
-    }
-
-    .channel-controls {
-        bottom: 70px;
-        padding: 0 15px;
-    }
-    
-    .channel-btn {
-        padding: 12px 18px;
-        font-size: 16px;
-    }
-    
-    .current-channel-info {
-        font-size: 16px;
-        padding: 10px 18px;
-    }
-
-    /* Hacer el video responsive */
-    .video-container {
-        position: relative;
-        width: 100%;
-        padding-bottom: 56.25%; /* Ratio 16:9 */
-        height: 0;
-    }
-    
-    video {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-}
-
-/* Soporte para modo horizontal en móvil */
-@media (max-width: 768px) and (orientation: landscape) {
-    .container {
-        padding: 15px;
-    }
-    
-    h1 {
-        font-size: 1.8rem;
-        margin-bottom: 15px;
-    }
-    
-    .channel-list {
-        max-height: 200px;
-    }
+.category-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(0, 212, 255, 0.2);
+    border-radius: 12px;
+    font-size: 11px;
+    color: #00d4ff;
+    margin-left: 8px;
 }
